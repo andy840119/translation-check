@@ -18,8 +18,3 @@ jobs:
       - name: Test with pytest
         run: |
           PYTHONPATH=src pytest --log-level=debug --junitxml=junit_report.xml .
-      - name: Publish Unit Test Results
-        uses: EnricoMi/publish-unit-test-result-action/composite@v1
-        if: always()
-        with:
-          files: junit_report.xml
