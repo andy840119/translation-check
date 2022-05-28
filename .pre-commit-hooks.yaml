@@ -1,0 +1,9 @@
+- id: translation-check
+  name: check missing translate in the html
+  description: check missing translate in the html
+  language: python
+  language_version: python3
+  pass_filenames: false
+  always_run: true
+  entry: checking
+
