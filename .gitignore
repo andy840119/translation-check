@@ -1,0 +1,7 @@
+*.sw[po]
+*.py[co]
+*.DS_Store
+dist/
+
+# ignore the jetbrain project file.
+.idea/
