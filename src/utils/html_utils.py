@@ -7,3 +7,8 @@ def get_content_in_the_html(html):
     html_regex = f'(?<=>){spacing_regex}([\w\s]+){spacing_regex}(?=<\/)'
     result = re.findall(html_regex, html)
     return [i for i in result if i and not i.isspace()]
+
+
+def get_angular_template_content_from_html_content(content):
+    template_regex = '{{\s*([\w\s.()]+)\s*}}'
+    return re.findall(template_regex, content)
