@@ -12,3 +12,9 @@ def get_content_in_the_html(html):
 def get_angular_template_content_from_html_content(content):
     template_regex = '{{\s*([\w\s.()]+)\s*}}'
     return re.findall(template_regex, content)
+
+
+# check another file format from fms project.
+def get_fms_template_content_from_html_content(content):
+    template_regex = '\[\[\s*([\w\s.()]+)\s*\]\]'
+    return re.findall(template_regex, content)
