@@ -33,7 +33,7 @@ def main() -> int:
     if args.quite:
         logger.setLevel(logging.ERROR)
     else:
-        logger.setLevel(logging.INFO)
+        logger.setLevel(logging.DEBUG)
         if not logger.hasHandlers():
             handler = logging.StreamHandler()
             logger.addHandler(handler)
