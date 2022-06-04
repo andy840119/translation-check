@@ -18,14 +18,22 @@ def _list_files_staged_only(extension):
         encoding='utf-8',
     ).split('\n')
 
+    logger.debug('Row lines: %r', output)
+
     files = []
 
     for line in output:
+        if line.startswith('diff') or line.startswith('index'):
+            continue
+
         if line.startswith('+++ '):
             new_diff_file = DiffFile()
             # todo: might cause remove the path if contains matched string, but it's OK for now.
             new_diff_file.file_name = line.replace('+++ ', '')
             files.append(new_diff_file)
+
+        if len(files) == 0:
+            continue
 
         if line.startswith('+'):
             files[-1].content += f'\n{ line[1:] }'
