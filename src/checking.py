@@ -1,8 +1,6 @@
 import enum
 import json
 import logging
-import os
-import re
 import subprocess
 
 logger = logging.getLogger('checking')
@@ -18,19 +16,26 @@ def _list_files_staged_only(extension):
     output = subprocess.check_output(
         ['git', '--no-pager', 'diff', '--cached', '-z', f'"{extension}"'],
         encoding='utf-8',
-    )
+    ).split('\n')
 
-    # todo: get content in the file.
-    for file in tracked_files:
-        logger.debug('file aaa: %r', json.dumps(list(file)))
+    files = []
 
-    return set(
-        [
-            os.path.normpath(tracked_file)
-            for tracked_file in tracked_files
-            if re.compile(pattern).match(os.path.basename(tracked_file))
-        ]
-    )
+    for line in output:
+        if line.startswith('+++ '):
+            new_diff_file = DiffFile()
+            # todo: might cause remove the path if contains matched string, but it's OK for now.
+            new_diff_file.file_name = line.replace('+++ ', '')
+            files.append(new_diff_file)
+
+        if line.startswith('+'):
+            files[-1].content += f'\n{ line[1:] }'
+
+        if line.startswith('-'):
+            continue
+
+        files[-1].content += f'\n{line}'
+
+    return files
 
 
 class Format(enum.Enum):
@@ -52,23 +57,16 @@ class CheckMode(enum.Enum):
 
 class Checking:
     def __init__(self, format, mode):
-        regex = self._find_tracked_files_extension(Format(format))
+        extension = self._find_tracked_files_extension(Format(format))
 
-        self._tracked_files = _list_files_staged_only(regex)
+        self._tracked_files = _list_files_staged_only(extension)
+        self._mode = CheckMode(mode)
+
         logger.debug('Tracked files: %r', self._tracked_files)
-
-        logger.debug('AAA: %r', json.dumps(self._tracked_files))
 
         # todo: get content in the file.
         for file in self._tracked_files:
-            logger.debug('file: %r', json.dumps(list(file)))
-
-        # append .git to exclude folder
-        exclude = ['.git']
-
-        # normalize a pathname by collapsing redundant separators
-        self._exclude = [os.path.normpath(path) for path in exclude]
-        self._mode = CheckMode(mode)
+            logger.debug('file: %r', json.dumps(file))
 
     @staticmethod
     def _find_tracked_files_extension(format):
