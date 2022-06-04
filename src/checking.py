@@ -12,12 +12,12 @@ class DiffFile:
 
 
 def _list_files_staged_only(extension):
-    logger.debug('Row lines: %r', ['git', '--no-pager', 'diff', '--cached', '-z', f'"{extension}"'])
+    logger.debug('Row lines: %r', ['git', '--no-pager', 'diff', '--cached', '-z', f'{extension}'])
 
     # list staged files
     # git --no-pager diff --cached -z "*.component.html"
     output = subprocess.check_output(
-        ['git', '--no-pager', 'diff', '--cached', '-z', f'"{extension}"'],
+        ['git', '--no-pager', 'diff', '--cached', '-z', f'{extension}'],
         encoding='utf-8',
     ).split('\n')
 
