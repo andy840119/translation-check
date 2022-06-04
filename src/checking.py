@@ -12,7 +12,10 @@ class DiffFile:
 
 
 def _list_files_staged_only(extension):
+    logger.debug('Row lines: %r', ['git', '--no-pager', 'diff', '--cached', '-z', f'"{extension}"'])
+
     # list staged files
+    # git --no-pager diff --cached -z "*.component.html"
     output = subprocess.check_output(
         ['git', '--no-pager', 'diff', '--cached', '-z', f'"{extension}"'],
         encoding='utf-8',
@@ -23,7 +26,15 @@ def _list_files_staged_only(extension):
     files = []
 
     for line in output:
+        # ignore the line like:
+        # diff --git a/container-date-filter.component.html b/container-date-filter.component.html
+        # index 5cb09e4ea9..e1e175b654 100644
         if line.startswith('diff') or line.startswith('index'):
+            continue
+
+        # ignore the line like:
+        # @@ -73,4 +73,4 @@
+        if line.startswith('@@'):
             continue
 
         if line.startswith('+++ '):
@@ -32,6 +43,7 @@ def _list_files_staged_only(extension):
             new_diff_file.file_name = line.replace('+++ ', '')
             files.append(new_diff_file)
 
+        # should not process if there's no files created.
         if len(files) == 0:
             continue
 
